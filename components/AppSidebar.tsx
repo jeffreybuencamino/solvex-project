@@ -11,8 +11,9 @@ import {
   SidebarMenuItem,
   SidebarTrigger
 } from "@/components/ui/sidebar"
+import { auth } from "@/lib/auth";
 import { Home, Inbox, Calendar, Search, Settings, Phone } from "lucide-react";
-
+type Session = typeof auth.$Infer.Session;
 // Menu items.
 const items = [
   {
@@ -42,10 +43,11 @@ const items = [
   },
 ]
 
-const AppSidebar = () => {
+const AppSidebar = ({session}: {session: Session | null}) => {
     return ( 
-        // <div>App Sidebar</div>
-        <Sidebar>
+      <>
+        
+        {session && (<Sidebar>
       <SidebarContent>
         <SidebarTrigger/>
         <SidebarGroup>
@@ -66,7 +68,9 @@ const AppSidebar = () => {
             </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-    </Sidebar>
+    </Sidebar>)}
+</>
+
      );
 }
  

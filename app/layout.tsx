@@ -42,12 +42,12 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange>
 
-          <SidebarProvider>
+          <SidebarProvider defaultOpen={false}>
           
         <main className="w-full">
           <Navbar session={session}/>
           <div className="px-4">
-            <AppSidebar/>
+            <AppSidebar session={session}/>
             {children}
           </div>
           

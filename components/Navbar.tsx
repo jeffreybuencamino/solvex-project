@@ -36,7 +36,7 @@ const Navbar = ({session}: NavbarProps) => {
     return ( 
         <nav className="p-4 flex items-center justify-between bg-gray-800">
             {/* LEFT */}
-            <SidebarTrigger/>
+            {session && <SidebarTrigger/>}
             
 
             {/* RIGHT */}
