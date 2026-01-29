@@ -27,6 +27,7 @@ model User {
 
   @@unique([email])
   @@map("user")
+  voiceAgents VoiceAgent[]
 }
 
 model Session {
@@ -75,4 +76,22 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model VoiceAgent {
+  id                       String   @id @default(auto()) @map("_id") @db.ObjectId
+  agent_id                 String   @unique  // Retell agent ID (unique)
+  last_modification_timestamp  BigInt
+  agent_name               String?
+  version                  Int
+  is_published             Boolean
+
+  // User relation
+  userId                   String
+  user                     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@map("voice_agents")
 }
