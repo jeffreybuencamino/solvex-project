@@ -6,30 +6,45 @@ import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { createNewVoiceAgent } from "@/lib/actions/voice-actions";
 import { useState } from "react";
-
+import { 
+  BarChart3, 
+  Users, 
+  Zap, 
+  DollarSign, 
+  Clock, 
+  Play, 
+  Settings,
+  Mic,
+  Bot
+} from 'lucide-react';
 
 type Session = typeof auth.$Infer.Session;
- 
-export default function DashboardClientPage({session}: {session: Session}) {
+
+export default function DashboardClientPage({ session }: { session: Session }) {
   const router = useRouter();
   const user = session.user;
-  // Redirect to auth if not authenticated
 
-
-  // 🔹 form state
+  // 🔹 form state - UNCHANGED
   const [agentName, setAgentName] = useState("");
   const [llmId, setLlmId] = useState("");
-
-  
 
   const handleSignOut = async () => {
     await signOut();
@@ -37,13 +52,12 @@ export default function DashboardClientPage({session}: {session: Session}) {
     router.push("/auth");
   };
 
-
-
+  // 🔹 UNCHANGED agent creation functions
   const testAgent = async (agentName: string, llm_id: string) => {
     try {
       await createNewVoiceAgent(agentName, {
         type: "retell-llm",
-        llm_id: llm_id  // Replace with your LLM ID
+        llm_id: llm_id
       });
       alert("✅ Agent created!");
     } catch (error: any) {
@@ -51,243 +65,201 @@ export default function DashboardClientPage({session}: {session: Session}) {
     }
   };
 
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!agentName || !llmId) {
       alert("Please fill in both fields");
       return;
     }
-
     await testAgent(agentName, llmId);
   };
 
+  // Mock data for AI agency dashboard
+  const stats = [
+    { name: 'Active Voice Agents', value: '12', change: '+4', icon: Mic, color: 'bg-blue-500' },
+    { name: 'Automations Today', value: '47', change: '+12%', icon: Play, color: 'bg-green-500' },
+    { name: 'Client Calls', value: '289', change: '+23%', icon: Users, color: 'bg-purple-500' },
+    { name: 'Avg Response', value: '1.8s', change: '-0.2s', icon: Clock, color: 'bg-orange-500' }
+  ];
 
-
+  const recentActivity = [
+    { id: 1, client: 'TechCorp', action: 'Voice agent deployed', status: 'success', time: '5 min ago' },
+    { id: 2, client: 'SalesPro', action: 'Call campaign running', status: 'running', time: '23 min ago' },
+    { id: 3, client: 'MarketingAI', action: 'Agent updated', status: 'success', time: '2 hrs ago' },
+    { id: 4, client: 'AutoVoice', action: 'Webhook retry', status: 'warning', time: '4 hrs ago' }
+  ];
 
   return (
-
-
-    // <div className="">
-    //   <h1>Dashboard - {user.email}</h1>
-      
-    //   <form onSubmit={handleSubmit}>
-    //     <div>
-    //       <label>Agent Name</label>
-    //       <input value={agentName} onChange={ (e) => setAgentName(e.target.value) } />
-    //     </div>
-
-    //     <div>
-    //       <label>LLM ID</label>
-    //       <input value={llmId} onChange={ (e) => setLlmId(e.target.value) } />
-    //     </div>
-
-    //     <button type="submit"></button>
-    //   </form>
-      
-
-    //   <button onClick={handleSignOut}>Sign Out</button>
-    //   {/* <Table>
-
-    //   </Table> */}
-    // </div>
-
-
-
-
-    <div className="min-h-screen from-blue-50 to-indigo-100">
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pt-20">
-        <div className="px-4 py-6 sm:px-0">
-          <div className=" rounded-lg shadow p-6">
-            <div className="flex justify-between items-start mb-6">
+    <div className="min-h-screen  from-slate-50 to-blue-50">
+      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 pt-20">
+        {/* Header with User Info - Enhanced */}
+        <div className="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+              AI Automation Dashboard
+            </h1>
+            <p className="text-xl ">Welcome back, {user.name}</p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3 p-3 rounded-xl shadow-sm border">
+              <img
+                className="h-12 w-12 rounded-full"
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+                alt={user.name}
+              />
               <div>
-                <h2 className="text-2xl font-bold mb-2">
-                  Welcome to Your Dashboard!
-                </h2>
-                <p className="text-gray-600">
-                  Manage your account and explore better-auth features
-                </p>
+                <p className="font-semibold text-sm">{user.name}</p>
+                <p className="text-xs text-slate-500">{user.email}</p>
               </div>
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center space-x-3">
-                  <img
-                    className="h-10 w-10 rounded-full"
-                    src={
-                      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
-                    }
-                  />
-                  <div className="text-sm">
-                    <p className="font-medium">{user.name}</p>
-                    <p className="text-gray-500 font-light">{user.email}</p>
+            </div>
+            <Button onClick={handleSignOut} variant="outline" size="sm">
+              Sign Out
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+          {/* Stats Cards */}
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <Card key={index} className="hover:shadow-xl transition-all border-0 bg-gradient-to-br hover:from-white">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg font-semibold">{stat.name}</CardTitle>
+                    <Icon className={`h-8 w-8 ${stat.color} text-white p-2 rounded-lg`} />
                   </div>
-                </div>
-                <button
-                  onClick={handleSignOut}
-                  className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-                >
-                  Sign Out
-                </button>
-              </div>
-            </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text ">{stat.value}</div>
+                  <p className="text-sm text-slate-500 mt-1">{stat.change}</p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
 
-            {/* Authentication Info */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-              <h3 className="text-lg font-medium text-blue-900 mb-2">
-                Authentication Status
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="font-medium text-blue-700">Status:</span>
-                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Authenticated
-                  </span>
-                </div>
-                <div>
-                  <span className="font-medium text-blue-700">Provider:</span>
-                  <span className="ml-2 text-blue-600">Better-Auth</span>
-                </div>
-                <div>
-                  <span className="font-medium text-blue-700">User ID:</span>
-                  <span className="ml-2 text-blue-600">{user.id}</span>
-                </div>
-                <div>
-                  <span className="font-medium text-blue-700">
-                    Email Verified:
-                  </span>
-                  <span className="ml-2 text-blue-600">{user.emailVerified}</span>
-                </div>
-              </div>
-            </div>
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+          {/* Recent Activity */}
+          <Card className="xl:col-span-2">
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+              <CardDescription>Last 24 hours</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Client</TableHead>
+                    <TableHead>Action</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Time</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recentActivity.map((activity) => (
+                    <TableRow key={activity.id} className="border-b hover:bg-slate-50">
+                      <TableCell className="font-medium">{activity.client}</TableCell>
+                      <TableCell>{activity.action}</TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant={
+                            activity.status === 'success' ? 'default' :
+                            activity.status === 'running' ? 'secondary' : 'destructive'
+                          }
+                        >
+                          {activity.status.toUpperCase()}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-slate-500">{activity.time}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
 
-            {/* Demo Features */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="bg-gray-50 rounded-lg p-6">
-                <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-indigo-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+          {/* Create Voice Agent - YOUR ORIGINAL FORM ENHANCED */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bot className="h-5 w-5" />
+                Create Voice Agent
+              </CardTitle>
+              <CardDescription>Deploy new AI voice automation</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="agentName">Agent Name</Label>
+                  <Input
+                    id="agentName"
+                    value={agentName}
+                    onChange={(e) => setAgentName(e.target.value)}
+                    placeholder="e.g., Sales Assistant"
+                  />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Social Login
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Seamlessly authenticate with Google, GitHub, and other social
-                  providers.
-                </p>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-6">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-green-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
+                <div className="space-y-2">
+                  <Label htmlFor="llmId">LLM ID</Label>
+                  <Input
+                    id="llmId"
+                    value={llmId}
+                    onChange={(e) => setLlmId(e.target.value)}
+                    placeholder="retell-llm-xxxx"
+                  />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  User Management
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Manage user accounts, profiles, and authentication settings.
-                </p>
-              </div>
+                <Button type="submit" className="w-full">
+                  <Zap className="mr-2 h-4 w-4" />
+                  Deploy Agent
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
 
-              <div className="bg-gray-50 rounded-lg p-6">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-purple-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Secure Access
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Protected routes and secure authentication flow with
-                  better-auth.
-                </p>
+        {/* Quick Actions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Manage your AI automations</CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            <Button variant="ghost" className="justify-start h-auto p-6">
+              <BarChart3 className="h-6 w-6 mr-3" />
+              <div>
+                <div className="font-medium">View Analytics</div>
+                <div className="text-xs text-slate-500">Call metrics & performance</div>
               </div>
-            </div>
+            </Button>
+            <Button variant="ghost" className="justify-start h-auto p-6">
+              <Users className="h-6 w-6 mr-3" />
+              <div>
+                <div className="font-medium">Manage Clients</div>
+                <div className="text-xs text-slate-500">Client settings & billing</div>
+              </div>
+            </Button>
+            <Button variant="ghost" className="justify-start h-auto p-6">
+              <Settings className="h-6 w-6 mr-3" />
+              <div>
+                <div className="font-medium">Agent Settings</div>
+                <div className="text-xs text-slate-500">Configure voice agents</div>
+              </div>
+            </Button>
+          </CardContent>
+        </Card>
 
-            {/* Demo Actions */}
-            <div className="mt-8 p-6 bg-gray-50 rounded-lg">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                Try These Actions
-              </h3>
-              <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={() => alert("Mock action: Profile updated!")}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-                >
-                  Update Profile
-                </button>
-                <button
-                  onClick={() => alert("Mock action: Settings saved!")}
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-                >
-                  Save Settings
-                </button>
-                <button
-                  onClick={() => alert("Mock action: Data exported!")}
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-                >
-                  Export Data
-                </button>
-              </div>
-            </div>
-
-            {/* Navigation */}
-            <div className="mt-8 pt-6 border-t border-gray-200">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Link
-                  href="/"
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-                >
-                  ← Back to Home
-                </Link>
-                <Link
-                  href="/auth"
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-                >
-                  Manage Account
-                </Link>
-              </div>
-            </div>
+        {/* Navigation - UNCHANGED */}
+        <div className="mt-12 pt-8 border-t border-slate-200">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link href="/" className="px-6 py-3 border border-slate-300 text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 transition-colors">
+              ← Back to Home
+            </Link>
+            <Link href="/auth" className="px-6 py-3 bg-blue-600 text-sm font-medium rounded-lg text-white hover:bg-blue-700 transition-colors">
+              Manage Account
+            </Link>
           </div>
         </div>
       </main>
     </div>
-
-
-      );
+  );
 }
