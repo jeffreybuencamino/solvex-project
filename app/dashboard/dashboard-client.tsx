@@ -38,7 +38,19 @@ import {
 
 type Session = typeof auth.$Infer.Session;
 
-export default function DashboardClientPage({ session }: { session: Session }) {
+
+
+type DashboardStats = {
+  activeVoiceAgents: number;
+  activeVoiceAgentsPreview: Array<{
+    agent_id: string;
+    agent_name: string;
+  }>;
+};
+
+
+
+export default function DashboardClientPage({ session, stats }: { session: Session, stats: DashboardStats  }) {
   const router = useRouter();
   const user = session.user;
 
@@ -75,11 +87,11 @@ export default function DashboardClientPage({ session }: { session: Session }) {
   };
 
   // Mock data for AI agency dashboard
-  const stats = [
-    { name: 'Active Voice Agents', value: '12', change: '+4', icon: Mic, color: 'bg-blue-500' },
-    { name: 'Automations Today', value: '47', change: '+12%', icon: Play, color: 'bg-green-500' },
-    { name: 'Client Calls', value: '289', change: '+23%', icon: Users, color: 'bg-purple-500' },
-    { name: 'Avg Response', value: '1.8s', change: '-0.2s', icon: Clock, color: 'bg-orange-500' }
+  const statsData = [
+    { name: 'Voice Agents', value: stats.activeVoiceAgents.toString(), change: '+4', icon: Mic, color: 'bg-blue-500' },
+    { name: 'Automations Today', value: 'N/A', change: '+12%', icon: Play, color: 'bg-green-500' },
+    { name: 'Client Calls', value: 'N/A', change: '+23%', icon: Users, color: 'bg-purple-500' },
+    // { name: 'Avg Response', value: '1.8s', change: '-0.2s', icon: Clock, color: 'bg-orange-500' }
   ];
 
   const recentActivity = [
@@ -118,21 +130,21 @@ export default function DashboardClientPage({ session }: { session: Session }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Stats Cards */}
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
+          {statsData.map((statsData, index) => {
+            const Icon = statsData.icon;
             return (
               <Card key={index} className="hover:shadow-xl transition-all border-0 bg-gradient-to-br hover:from-white">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold">{stat.name}</CardTitle>
-                    <Icon className={`h-8 w-8 ${stat.color} text-white p-2 rounded-lg`} />
+                    <CardTitle className="text-lg font-semibold">{statsData.name}</CardTitle>
+                    <Icon className={`h-8 w-8 ${statsData.color} text-white p-2 rounded-lg`} />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text ">{stat.value}</div>
-                  <p className="text-sm text-slate-500 mt-1">{stat.change}</p>
+                  <div className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text ">{statsData.value}</div>
+                  <p className="text-sm text-slate-500 mt-1">{statsData.change}</p>
                 </CardContent>
               </Card>
             );
