@@ -5,11 +5,9 @@ import { auth } from "../auth";
 import { headers } from "next/headers";
 
 export const signUp = async (email: string, password: string, name: string) => {
-    const result = await auth.api.signUpEmail({
-        body: {email, password, name, callbackURL: "/dashboard"}
-    });
-
-    return result;
+    return auth.api.signUpEmail({
+    body: { email, password, name },
+  });
 };
 
 export const signIn = async (email: string, password: string) => {

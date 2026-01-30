@@ -44,7 +44,8 @@ export default function AuthClientPage() {
         if (!result.user) {
           setError("Failed to create account.")
         }
-        console.log("Signed up");
+        alert("SIGNED UP.")
+        window.location.href = "/dashboard";
       }
     } catch (err) {
       setError(
