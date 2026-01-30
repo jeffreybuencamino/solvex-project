@@ -53,14 +53,12 @@ export async function createNewVoiceAgent(
     agent_id: retellAgent.agent_id,
     last_modification_timestamp: retellAgent.last_modification_timestamp,
     agent_name: retellAgent.agent_name,
-    version: Number((retellAgent as any).version ?? 0),
-    is_published: Boolean((retellAgent as any).is_published ?? false),
     userId: session.user.id,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
 
-
+}
 
     // Clean, minimal Prisma create
 //   const voiceAgent = await prisma.voiceAgent.create({
@@ -77,4 +75,3 @@ export async function createNewVoiceAgent(
 
 
 
-}
