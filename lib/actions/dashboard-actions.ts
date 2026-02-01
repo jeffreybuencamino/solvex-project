@@ -11,7 +11,7 @@ type DashboardStats = {
   }>;
 };
 
-export async function getDashboardStats(userId: string) {
+export async function fetchVoiceAgents(userId: string) {
   try {
     const { voiceAgents } = await getCollections();
 

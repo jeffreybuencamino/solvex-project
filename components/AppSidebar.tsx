@@ -12,7 +12,7 @@ import {
   SidebarTrigger
 } from "@/components/ui/sidebar"
 import { auth } from "@/lib/auth";
-import { Home, Inbox, Calendar, Search, Settings, Phone } from "lucide-react";
+import { Home, Inbox, Calendar, Search, Settings, Phone, Landmark } from "lucide-react";
 type Session = typeof auth.$Infer.Session;
 // Menu items.
 const items = [
@@ -37,9 +37,9 @@ const items = [
 //     icon: Search,
 //   },
   {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings,
+    title: "Billing",
+    url: "/billing",
+    icon: Landmark,
   },
 ]
 

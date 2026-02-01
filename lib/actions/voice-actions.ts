@@ -12,7 +12,7 @@ type ResponseEngine = {
 
 
 // FUNCTIONS
-
+// CREATES NEW VOICE AGENT WITH RETELL LLM ID AND STORES IN MONGODB FOR THE USER BASED ON THE SESSION.
 export async function createNewVoiceAgent(
     agent_name: string,
     response_engine: ResponseEngine
@@ -51,6 +51,7 @@ export async function createNewVoiceAgent(
 
     await voiceAgents.insertOne({
     agent_id: retellAgent.agent_id,
+    response_engine: retellAgent.response_engine,
     last_modification_timestamp: retellAgent.last_modification_timestamp,
     agent_name: retellAgent.agent_name,
     userId: session.user.id,

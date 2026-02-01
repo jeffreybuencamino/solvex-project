@@ -21,6 +21,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Solvex Automations",
   description: "Offering LLM-Powered automations for businesses.",
+  keywords: ["AI", "LLM", "Automations", "AI Voice Agents", "Business Automations"]
 };
 
 export default async function RootLayout({

@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createNewVoiceAgent } from "@/lib/actions/voice-actions";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   BarChart3, 
   Users, 
@@ -38,8 +38,7 @@ import {
 
 type Session = typeof auth.$Infer.Session;
 
-
-
+// ACTIVE VOICE AGENT ANALYTICS
 type DashboardStats = {
   activeVoiceAgents: number;
   activeVoiceAgentsPreview: Array<{
@@ -48,15 +47,36 @@ type DashboardStats = {
   }>;
 };
 
+type Props = {
+  session: Session;
+  stats: DashboardStats;
+  userId: string;
+};
 
-
-export default function DashboardClientPage({ session, stats }: { session: Session, stats: DashboardStats  }) {
+export default function DashboardClientPage({ session, stats, userId }: Props) {
   const router = useRouter();
   const user = session.user;
 
   // 🔹 form state - UNCHANGED
   const [agentName, setAgentName] = useState("");
   const [llmId, setLlmId] = useState("");
+
+  const [count, setCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  // useEffect(() => {
+  //   const fetchClients = async () => {
+  //     setLoading(true);
+      
+  //     const url = '/api/clients';
+  //     const res = await fetch(url);
+  //     const data = await res.json();
+  //     setCount(data.count || data.length);
+  //     setLoading(false);
+  //   };
+
+  //   fetchClients();
+  // }, [userId]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -65,7 +85,7 @@ export default function DashboardClientPage({ session, stats }: { session: Sessi
   };
 
   // 🔹 UNCHANGED agent creation functions
-  const testAgent = async (agentName: string, llm_id: string) => {
+  const createVA = async (agentName: string, llm_id: string) => {
     try {
       await createNewVoiceAgent(agentName, {
         type: "retell-llm",
@@ -83,26 +103,18 @@ export default function DashboardClientPage({ session, stats }: { session: Sessi
       alert("Please fill in both fields");
       return;
     }
-    await testAgent(agentName, llmId);
+    await createVA(agentName, llmId);
   };
 
   // Mock data for AI agency dashboard
   const statsData = [
     { name: 'Voice Agents', value: stats.activeVoiceAgents.toString(), change: '+4', icon: Mic, color: 'bg-blue-500' },
     { name: 'Automations Today', value: 'N/A', change: '+12%', icon: Play, color: 'bg-green-500' },
-    { name: 'Client Calls', value: 'N/A', change: '+23%', icon: Users, color: 'bg-purple-500' },
-    // { name: 'Avg Response', value: '1.8s', change: '-0.2s', icon: Clock, color: 'bg-orange-500' }
-  ];
-
-  const recentActivity = [
-    { id: 1, client: 'TechCorp', action: 'Voice agent deployed', status: 'success', time: '5 min ago' },
-    { id: 2, client: 'SalesPro', action: 'Call campaign running', status: 'running', time: '23 min ago' },
-    { id: 3, client: 'MarketingAI', action: 'Agent updated', status: 'success', time: '2 hrs ago' },
-    { id: 4, client: 'AutoVoice', action: 'Webhook retry', status: 'warning', time: '4 hrs ago' }
+    // { name: `Client Calls (${userId.slice(0, 8)}...)`, value: count.toString(), change: '+23%', icon: Users, color: 'bg-purple-500' },
   ];
 
   return (
-    <div className="min-h-screen  from-slate-50 to-blue-50">
+    <div className="min-h-screen from-slate-50 to-blue-50">
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 pt-20">
         {/* Header with User Info - Enhanced */}
         <div className="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -110,7 +122,7 @@ export default function DashboardClientPage({ session, stats }: { session: Sessi
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
               AI Automation Dashboard
             </h1>
-            <p className="text-xl ">Welcome back, {user.name}</p>
+            <p className="text-xl">Welcome back, {user.name}</p>
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3 p-3 rounded-xl shadow-sm border">
@@ -132,7 +144,7 @@ export default function DashboardClientPage({ session, stats }: { session: Sessi
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Stats Cards */}
-          {statsData.map((statsData, index) => {
+          {stats && statsData.map((statsData, index) => {
             const Icon = statsData.icon;
             return (
               <Card key={index} className="hover:shadow-xl transition-all border-0 bg-gradient-to-br hover:from-white">
@@ -143,7 +155,7 @@ export default function DashboardClientPage({ session, stats }: { session: Sessi
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text ">{statsData.value}</div>
+                  <div className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text">{statsData.value}</div>
                   <p className="text-sm text-slate-500 mt-1">{statsData.change}</p>
                 </CardContent>
               </Card>
@@ -152,42 +164,51 @@ export default function DashboardClientPage({ session, stats }: { session: Sessi
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
-          {/* Recent Activity */}
+
+          {/* Active Voice Agents - MAPPING OVER stats.activeVoiceAgentsPreview */}
           <Card className="xl:col-span-2">
             <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>Last 24 hours</CardDescription>
+              <CardTitle>Active Voice Agents</CardTitle>
+              <CardDescription>Your deployed AI voice agents</CardDescription>
             </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Client</TableHead>
-                    <TableHead>Action</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Time</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recentActivity.map((activity) => (
-                    <TableRow key={activity.id} className="border-b hover:bg-slate-50">
-                      <TableCell className="font-medium">{activity.client}</TableCell>
-                      <TableCell>{activity.action}</TableCell>
-                      <TableCell>
-                        <Badge 
-                          variant={
-                            activity.status === 'success' ? 'default' :
-                            activity.status === 'running' ? 'secondary' : 'destructive'
-                          }
-                        >
-                          {activity.status.toUpperCase()}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-slate-500">{activity.time}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <CardContent className="p-0">
+              <div className="border rounded-md overflow-hidden">
+                {/* Sticky Header */}
+                <div className="bg-background/95 backdrop-blur border-b sticky top-0 z-10">
+                  <div className="grid grid-cols-[200px_1fr_120px] px-6 py-4">
+                    <div className="font-semibold">Agent Name</div>
+                    <div className="font-semibold">Agent ID</div>
+                    <div className="font-semibold text-center">Status</div>
+                  </div>
+                </div>
+                
+                {/* Scrollable Body */}
+                <div className="max-h-[320px] overflow-y-auto">
+                  <div className="divide-y divide-border">
+                    {stats.activeVoiceAgentsPreview.map((agent, index) => (
+                      <div 
+                        key={agent.agent_id || index}
+                        className="grid grid-cols-[200px_1fr_120px] px-6 py-4 hover:bg-slate-50 transition-colors group"
+                      >
+                        <div className="font-medium truncate">{agent.agent_name}</div>
+                        <div className="truncate text-sm text-slate-600 break-all">{agent.agent_id}</div>
+                        <div className="flex justify-center">
+                          <Badge variant="default" className="text-xs">
+                            ACTIVE
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                    {stats.activeVoiceAgentsPreview.length === 0 && (
+                      <div className="grid grid-cols-[200px_1fr_120px] px-6 py-12 text-center text-slate-500">
+                        <div></div>
+                        <div>No active voice agents yet</div>
+                        <div></div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 

@@ -38,5 +38,6 @@ export async function getCollections() {
     leads: db.collection("leads"),
     signups: db.collection("sign-ups"),
     voiceAgents: db.collection("voice_agents"), // ✅ add this
+    user: db.collection("user")
   };
 }
