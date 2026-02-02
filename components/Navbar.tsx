@@ -47,7 +47,7 @@ const Navbar = ({session}: NavbarProps) => {
                   : "text-indigo-600 bg-indigo-50"
               }`} href="/">Home</Link>}
             {session && (<Link href="/dashboard">Dashboard</Link>)}
-            {!session && (<Link className="text-amber-50" href="/auth">Sign in</Link>)}
+            {!session && (<Link className="" href="/auth">Sign in</Link>)}
             {/* LIGHT/DARK TOGGLE */}
             <DropdownMenu>
       <DropdownMenuTrigger asChild>
